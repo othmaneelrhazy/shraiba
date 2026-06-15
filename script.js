@@ -1,5 +1,5 @@
 // ====== Store Configuration ======
-const WHATSAPP_NUMBER = "212600000000"; // ← ضع رقم الواتساب الخاص بك هنا
+const WHATSAPP_NUMBER = "212688812627"; // ← ضع رقم الواتساب الخاص بك هنا
 
 // ====== Product Data (10 products) ======
 const products = [
