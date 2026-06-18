@@ -22,15 +22,31 @@
       display: flex; flex-direction: column; gap: 2rem;
     }
 
-    /* معرض الصور */
+    /* السحب يميناً ويساراً */
     .gallery__main {
       position: relative; border-radius: var(--radius);
       overflow: hidden; box-shadow: var(--shadow);
       background: var(--beige);
+      touch-action: pan-y;
     }
-    .gallery__main img {
-      width: 100%; aspect-ratio: 1; object-fit: cover;
-      display: block; transition: opacity 0.3s ease;
+    .gallery__slider {
+      display: flex; transition: transform 0.35s ease;
+      will-change: transform;
+    }
+    .gallery__slider img {
+      width: 100%; flex-shrink: 0;
+      aspect-ratio: 1; object-fit: cover; display: block;
+    }
+    .gallery__arrows {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      width: 100%; display: flex; justify-content: space-between;
+      padding: 0 0.5rem; pointer-events: none;
+    }
+    .gallery__arrow {
+      pointer-events: all; background: rgba(255,255,255,0.85);
+      border: none; border-radius: 50%; width: 36px; height: 36px;
+      font-size: 1.1rem; cursor: pointer; box-shadow: var(--shadow);
+      display: grid; place-items: center;
     }
     .gallery__thumbs {
       display: flex; gap: 0.6rem; margin-top: 0.8rem;
@@ -131,6 +147,10 @@
 
   <script src="script.js"></script>
   <script>
+    let currentIndex = 0;
+    let imgs = [];
+    let startX = 0;
+
     function loadProduct() {
       const params = new URLSearchParams(window.location.search);
       const id = parseInt(params.get("id"));
@@ -144,20 +164,28 @@
 
       document.title = `شرايبة | ${product.name}`;
 
-      const imgs = product.images || [product.img];
+      imgs = product.images || [product.img];
+      currentIndex = 0;
       const waMsg = `مرحبًا 👋 أريد طلب: ${product.name} بسعر ${product.price} درهم 🏺`;
       const waUrl = `https://wa.me/212688812627?text=${encodeURIComponent(waMsg)}`;
 
       document.getElementById("productLayout").innerHTML = `
         <div class="gallery">
-          <div class="gallery__main">
-            <img id="mainImg" src="${imgs[0]}" alt="${product.name}" />
+          <div class="gallery__main" id="galleryMain">
+            <div class="gallery__slider" id="gallerySlider">
+              ${imgs.map((src, i) => `<img src="${src}" alt="صورة ${i+1}" />`).join("")}
+            </div>
+            ${imgs.length > 1 ? `
+            <div class="gallery__arrows">
+              <button class="gallery__arrow" onclick="prevImg()">‹</button>
+              <button class="gallery__arrow" onclick="nextImg()">›</button>
+            </div>` : ""}
           </div>
           ${imgs.length > 1 ? `
           <div class="gallery__thumbs">
             ${imgs.map((src, i) => `
               <img src="${src}" alt="صورة ${i+1}" class="${i===0?'active':''}"
-                onclick="switchImg('${src}', this)" />
+                onclick="goToImg(${i})" />
             `).join("")}
           </div>` : ""}
         </div>
@@ -183,12 +211,37 @@
           <p class="product-info__note">📦 الدفع عند الاستلام · 🔄 ضمان الاستبدال 7 أيام</p>
         </div>
       `;
+
+      // السحب باللمس
+      const main = document.getElementById("galleryMain");
+      main.addEventListener("touchstart", e => { startX = e.touches[0].clientX; }, { passive: true });
+      main.addEventListener("touchend", e => {
+        const diff = startX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) diff > 0 ? nextImg() : prevImg();
+      });
     }
 
-    function switchImg(src, el) {
-      document.getElementById("mainImg").src = src;
-      document.querySelectorAll(".gallery__thumbs img").forEach(i => i.classList.remove("active"));
-      el.classList.add("active");
+    function updateSlider() {
+      const slider = document.getElementById("gallerySlider");
+      if (slider) slider.style.transform = `translateX(${currentIndex * 100}%)`;
+      document.querySelectorAll(".gallery__thumbs img").forEach((el, i) => {
+        el.classList.toggle("active", i === currentIndex);
+      });
+    }
+
+    function nextImg() {
+      currentIndex = (currentIndex + 1) % imgs.length;
+      updateSlider();
+    }
+
+    function prevImg() {
+      currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
+      updateSlider();
+    }
+
+    function goToImg(i) {
+      currentIndex = i;
+      updateSlider();
     }
 
     document.addEventListener("DOMContentLoaded", loadProduct);
