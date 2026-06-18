@@ -8,7 +8,19 @@
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    /* ====== صفحة المنتج ====== */
+    /* شريط الشحن */
+    .shipping-bar {
+      background: var(--brown-dark); color: var(--beige);
+      text-align: center; font-size: 0.85rem; font-weight: 700;
+      padding: 0.6rem 1rem; letter-spacing: 0.02em;
+    }
+
+    /* منتجات مقترحة */
+    .related { background: var(--beige); padding: 2.5rem 0 3rem; margin-top: 2rem; }
+    .related__title {
+      font-size: 1.4rem; font-weight: 900; margin-bottom: 1.5rem;
+      color: var(--brown-dark);
+    }
     .product-page { padding: 1.5rem 0 3rem; }
 
     .back-btn {
@@ -131,16 +143,28 @@
     </div>
   </header>
 
+  <!-- شريط الشحن -->
+  <div class="shipping-bar">
+    🚚👈 تكلفة الشحن مشمولة في سعر المنتج
+  </div>
+
   <main class="product-page">
     <div class="container">
       <a href="index.html" class="back-btn">← العودة للمنتجات</a>
 
       <div class="product-layout" id="productLayout">
-        <!-- يتم تحميله بواسطة JS -->
         <div style="text-align:center;padding:3rem;color:var(--brown);">جاري التحميل...</div>
       </div>
     </div>
   </main>
+
+  <!-- منتجات مقترحة -->
+  <section class="related">
+    <div class="container">
+      <h2 class="related__title">منتجات أخرى قد تعجبك</h2>
+      <div class="products__grid" id="relatedGrid"></div>
+    </div>
+  </section>
 
   <!-- Floating WhatsApp -->
   <a href="https://wa.me/212688812627" class="wa-float" target="_blank" rel="noopener" aria-label="اطلب عبر واتساب">💬</a>
@@ -212,7 +236,7 @@
         </div>
       `;
 
-      // السحب باللمس
+      loadRelated(id);
       const main = document.getElementById("galleryMain");
       main.addEventListener("touchstart", e => { startX = e.touches[0].clientX; }, { passive: true });
       main.addEventListener("touchend", e => {
@@ -244,7 +268,34 @@
       updateSlider();
     }
 
-    document.addEventListener("DOMContentLoaded", loadProduct);
+    function loadRelated(currentId) {
+      const related = products.filter(p => !p.hidden && p.id !== currentId);
+      const grid = document.getElementById("relatedGrid");
+      if (!grid || related.length === 0) return;
+      grid.innerHTML = related.map(p => `
+        <article class="card visible">
+          <a href="product.html?id=${p.id}" style="display:contents">
+            <div class="card__media">
+              <img src="${p.img}" alt="${p.name}" loading="lazy" />
+              ${p.badge ? `<span class="card__badge">${p.badge}</span>` : ""}
+            </div>
+          </a>
+          <div class="card__body">
+            <h3 class="card__name">${p.name}</h3>
+            <div class="card__pricing">
+              <span class="card__price">${p.price} درهم</span>
+              <span class="card__old">${p.oldPrice} درهم</span>
+            </div>
+            <a class="card__details" href="product.html?id=${p.id}">🔍 تفاصيل المنتج</a>
+            <a class="card__wa" href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`مرحبًا 👋 أريد طلب: ${p.name} بسعر ${p.price} درهم 🏺`)}" target="_blank" rel="noopener">اطلب عبر واتساب 💬</a>
+          </div>
+        </article>
+      `).join("");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      loadProduct();
+    });
   </script>
 </body>
 </html>
