@@ -5,14 +5,14 @@ const WHATSAPP_NUMBER = "212688812627"; // ← ضع رقم الواتساب ال
 const products = [
   { id: 1,  name: "قنينة شرايبة الفخارية مع كوب", desc: "اشرب الماء كما كان يشرب أجدادك — من طين طبيعي 100% بدون أي مواد كيماوية. تحمل لتر كامل وتبرّد الماء بشكل طبيعي. شكل قنينة لوسيور المحبوبة، بروح فخارية أصيلة.", price: 120, oldPrice: 160, rating: "5.0", sold: 47, badge: "الأكثر مبيعًا", img: "https://blogger.googleusercontent.com/img/a/AVvXsEgznuUP_4ikC26WELPmY_7jyDuOXLiM1mEjRp-K6PttHuFzag0J323hNcpv_gO4nAkw_9pLWd2E133NM6BH6jnXh7HIEGzx7D9KJgWZtvr2-cF2D7zgSzj6XE9k2p7X64OluP92EWX1sWjYRMYxzKm9Wnk0sabfjprKyEkKfDIEFRdpnIl8wFCo-TakH1zQ" },
   { id: 2,  name: "قنينة الطين الكبيرة — لتر ونص", desc: "بدون ثلاجة، بدون كهرباء، بدون بلاستيك — الطين يبرّد الماء بشكل طبيعي كما كان أجدادنا. تحمل لتراً ونصف، آمنة 100%، خرجت من الفرن على 950 درجة.", price: 139, oldPrice: 180, rating: "4.9", sold: 23, badge: "جديد", img: "https://blogger.googleusercontent.com/img/a/AVvXsEhGGfaKuf_WaOEHGF7ZcbYajZA7eAg9ORINCi9ShaasIWGT-7nutoI7A2MkaKmWtqhgm73HJ5_hZrS4WS_TK348LqEMDWrSyevvJ6JlGSW5-qI5PyrhESvac8bSm-Vx-2isckCGrKAr8YLoDw1dJPUb-xQ2hMehE97-T13mdBUnPRIxYu8PgEwskt0VDZXo" },
-  { id: 3,  name: "طقم أكواب فخارية (6 قطع)", desc: "أكواب يدوية بألوان ترابية دافئة، مثالية للشاي والقهوة.",                price: 179, oldPrice: 240, rating: "4.9", sold: 2100, badge: "عرض خاص" },
-  { id: 4,  name: "صحن تقديم فخاري مزخرف",    desc: "صحن واسع بنقوش فاسية تقليدية لتقديم أشهى الأطباق.",                     price: 149, oldPrice: 199, rating: "4.7", sold: 730 },
-  { id: 5,  name: "مزهرية فخارية عصرية",       desc: "مزهرية بتصميم عصري وروح تقليدية، صناعة حرفية متقنة.",                   price: 219, oldPrice: 290, rating: "4.8", sold: 540 },
-  { id: 6,  name: "قِدر فخاري للطبخ البلدي",   desc: "قدر صحي للطبخ البطيء يحافظ على نكهة الأطباق المغربية الأصيلة.",          price: 279, oldPrice: 360, rating: "4.9", sold: 980 },
-  { id: 7,  name: "طقم زبادي فخارية (4 قطع)",  desc: "زبادي صغيرة للحساء والحريرة بلمسة يدوية فريدة.",                        price: 129, oldPrice: 175, rating: "4.6", sold: 1500, badge: "جديد" },
-  { id: 8,  name: "مبخرة فخارية تقليدية",      desc: "مبخرة مزخرفة يدويًا لعطور البخور المغربي الفاخر.",                       price: 99,  oldPrice: 140, rating: "4.7", sold: 650 },
-  { id: 9,  name: "إبريق ماء فخاري (الغرّاف)",  desc: "إبريق تقليدي يحافظ على برودة الماء بشكل طبيعي.",                        price: 159, oldPrice: 210, rating: "4.8", sold: 1120 },
-  { id: 10, name: "طبق فواكه فخاري مرتفع",     desc: "طبق أنيق بقاعدة مرتفعة لتقديم الفواكه والحلويات.",                       price: 189, oldPrice: 250, rating: "4.7", sold: 480 },
+  { id: 3,  hidden: true, name: "طقم أكواب فخارية (6 قطع)", desc: "", price: 0, oldPrice: 0, rating: "5.0", sold: 0 },
+  { id: 4,  hidden: true, name: "قريباً", desc: "", price: 0, oldPrice: 0, rating: "5.0", sold: 0 },
+  { id: 5,  hidden: true, name: "قريباً", desc: "", price: 0, oldPrice: 0, rating: "5.0", sold: 0 },
+  { id: 6,  hidden: true, name: "قريباً", desc: "", price: 0, oldPrice: 0, rating: "5.0", sold: 0 },
+  { id: 7,  hidden: true, name: "قريباً", desc: "", price: 0, oldPrice: 0, rating: "5.0", sold: 0 },
+  { id: 8,  hidden: true, name: "قريباً", desc: "", price: 0, oldPrice: 0, rating: "5.0", sold: 0 },
+  { id: 9,  hidden: true, name: "قريباً", desc: "", price: 0, oldPrice: 0, rating: "5.0", sold: 0 },
+  { id: 10, hidden: true, name: "قريباً", desc: "", price: 0, oldPrice: 0, rating: "5.0", sold: 0 },
 ];
 
 // ====== Helpers ======
@@ -27,6 +27,7 @@ const waLink = (product) => {
 function renderProducts() {
   const grid = document.getElementById("productGrid");
   grid.innerHTML = products
+    .filter(p => !p.hidden)
     .map(
       (p) => `
     <article class="card">
