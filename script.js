@@ -9,7 +9,7 @@ const products = [
     desc: "اشرب الماء كما كان يشرب أجدادك — من طين طبيعي 100% بدون أي مواد كيماوية. تحمل لتر كامل وتبرّد الماء بشكل طبيعي. شكل قنينة لوسيور المحبوبة، بروح فخارية أصيلة.",
     fullDesc: "قنينة فخارية مصنوعة يدوياً من طين طبيعي 100% بدون أي مواد كيماوية أو إضافات. مستوحاة من شكل قنينة لوسيور المغربية المحبوبة، حُوِّلت إلى تحفة فخارية أصيلة.\n\n✅ تحمل لتراً كاملاً من الماء\n✅ تبرّد الماء بشكل طبيعي بدون ثلاجة\n✅ آمنة تماماً — طين طبيعي خرج من الفرن على 950 درجة\n✅ مع كوب فخاري مميز\n✅ توصيل لجميع مدن المغرب",
     price: 120, oldPrice: 160, rating: "5.0", sold: 47, badge: "الأكثر مبيعًا",
-    img: "https://blogger.googleusercontent.com/img/a/AVvXsEgznuUP_4ikC26WELPmY_7jyDuOXLiM1mEjRp-K6PttHuFzag0J323hNcpv_gO4nAkw_9pLWd2E133NM6BH6jnXh7HIEGzx7D9KJgWZtvr2-cF2D7zgSzj6XE9k2p7X64OluP92EWX1sWjYRMYxzKm9Wnk0sabfjprKyEkKfDIEFRdpnIl8wFCo-TakH1zQ",
+    img: "images/product1-1.jpg",
     images: ["images/product1-1.jpg","images/product1-2.jpg","images/product1-3.jpg"]
   },
   {
@@ -18,7 +18,7 @@ const products = [
     desc: "بدون ثلاجة، بدون كهرباء، بدون بلاستيك — الطين يبرّد الماء بشكل طبيعي كما كان أجدادنا. تحمل لتراً ونصف، آمنة 100%، خرجت من الفرن على 950 درجة.",
     fullDesc: "قنينة فخارية كبيرة مصنوعة من طين مغربي طبيعي 100%، مستوحاة من شكل القنينة الزجاجية الكلاسيكية.\n\n✅ تحمل لتراً ونصف من الماء\n✅ تبرّد الماء طبيعياً — الطين يتنفس ويعطي الماء طعماً نقياً\n✅ مصنوعة يدوياً وحُرقت في الفرن على 950 درجة مئوية\n✅ آمنة تماماً للاستخدام اليومي\n✅ توصيل لجميع مدن المغرب شامل في السعر",
     price: 139, oldPrice: 180, rating: "4.9", sold: 23, badge: "جديد",
-    img: "https://blogger.googleusercontent.com/img/a/AVvXsEhGGfaKuf_WaOEHGF7ZcbYajZA7eAg9ORINCi9ShaasIWGT-7nutoI7A2MkaKmWtqhgm73HJ5_hZrS4WS_TK348LqEMDWrSyevvJ6JlGSW5-qI5PyrhESvac8bSm-Vx-2isckCGrKAr8YLoDw1dJPUb-xQ2hMehE97-T13mdBUnPRIxYu8PgEwskt0VDZXo",
+    img: "images/product2-1.jpg",
     images: ["images/product2-1.jpg","images/product2-2.jpg","images/product2-3.jpg"]
   },
   { id: 3,  hidden: true, name: "طقم أكواب فخارية (6 قطع)", desc: "", price: 0, oldPrice: 0, rating: "5.0", sold: 0 },
