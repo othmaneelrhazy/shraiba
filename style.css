@@ -124,6 +124,13 @@ a { text-decoration: none; color: inherit; }
 .card__pricing { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.6rem; }
 .card__price { font-size: 1.15rem; font-weight: 900; color: var(--terracotta); }
 .card__old { font-size: 0.78rem; color: #9c8771; text-decoration: line-through; }
+.card__details {
+  text-align: center; font-weight: 700; font-size: 0.85rem;
+  padding: 0.55rem; border-radius: 9px; transition: all 0.2s;
+  border: 2px solid var(--terracotta); color: var(--terracotta);
+  margin-bottom: 0.5rem; display: block;
+}
+.card__details:hover { background: var(--terracotta); color: var(--white); }
 .card__wa {
   margin-top: auto; background: var(--green); color: var(--white);
   text-align: center; font-weight: 700; font-size: 0.85rem;
