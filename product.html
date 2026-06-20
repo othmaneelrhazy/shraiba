@@ -87,7 +87,13 @@
       color: var(--brown);
     }
     .product-info__meta .stars { color: #e0a426; font-weight: 700; }
-    .product-info__pricing {
+    .product-info__stock {
+  background: #fff3cd; border: 1px solid #ffc107;
+  border-radius: 10px; padding: 0.6rem 1rem;
+  font-size: 0.85rem; font-weight: 700; color: #856404;
+  margin-bottom: 1rem;
+}
+.product-info__pricing {
       display: flex; align-items: baseline; gap: 0.8rem;
       margin-bottom: 1.2rem;
     }
@@ -221,6 +227,7 @@
             <span class="stars">★ ${product.rating}</span>
             <span>| تم بيع +${product.sold} قطعة</span>
           </div>
+          ${product.stock ? `<div class="product-info__stock">⚠️ باقي ${product.stock} قطع فقط في المخزون</div>` : ""}
           <div class="product-info__pricing">
             <span class="product-info__price">${product.price} درهم</span>
             <span class="product-info__old">${product.oldPrice} درهم</span>
@@ -232,7 +239,7 @@
           <a href="${waUrl}" class="product-info__wa" target="_blank" rel="noopener">
             💬 اطلب الآن عبر واتساب
           </a>
-          <p class="product-info__note">📦 الدفع عند الاستلام · 🔄 ضمان الاستبدال 7 أيام</p>
+          <p class="product-info__note">📦 الدفع عند الاستلام</p>
         </div>
       `;
 
