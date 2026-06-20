@@ -68,6 +68,25 @@ a { text-decoration: none; color: inherit; }
 .hero__stats div { display: flex; flex-direction: column; }
 .hero__stats strong { font-size: 1.3rem; color: var(--terracotta); }
 .hero__stats span { font-size: 0.8rem; color: var(--brown); }
+.hero__slider { position: relative; width: 100%; }
+.hero__slider img {
+  width: 100%; border-radius: var(--radius);
+  aspect-ratio: 1; object-fit: cover;
+  position: absolute; top: 0; left: 0;
+  opacity: 0; transition: opacity 0.5s ease;
+}
+.hero__slider img:first-child { opacity: 1; position: relative; }
+.hero__dots {
+  display: flex; justify-content: center; gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+.hero__dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--brown); opacity: 0.3; cursor: pointer;
+  transition: opacity 0.2s;
+}
+.hero__dot.active { opacity: 1; background: var(--terracotta); }
+
 .hero__image { position: relative; }
 .hero__image img { border-radius: var(--radius); box-shadow: var(--shadow); aspect-ratio: 1; object-fit: cover; }
 .hero__tag {
