@@ -1,308 +1,194 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>شرايبة | تفاصيل المنتج</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    /* شريط الشحن */
-    .shipping-bar {
-      background: var(--brown-dark); color: var(--beige);
-      text-align: center; font-size: 0.85rem; font-weight: 700;
-      padding: 0.6rem 1rem; letter-spacing: 0.02em;
-    }
-
-    /* منتجات مقترحة */
-    .related { background: var(--beige); padding: 2.5rem 0 3rem; margin-top: 2rem; }
-    .related__title {
-      font-size: 1.4rem; font-weight: 900; margin-bottom: 1.5rem;
-      color: var(--brown-dark);
-    }
-    .product-page { padding: 1.5rem 0 3rem; }
-
-    .back-btn {
-      display: inline-flex; align-items: center; gap: 0.4rem;
-      color: var(--brown); font-weight: 600; font-size: 0.9rem;
-      margin-bottom: 1.5rem; transition: color 0.2s;
-    }
-    .back-btn:hover { color: var(--terracotta); }
-
-    .product-layout {
-      display: flex; flex-direction: column; gap: 2rem;
-    }
-
-    /* السحب يميناً ويساراً */
-    .gallery__main {
-      position: relative; border-radius: var(--radius);
-      overflow: hidden; box-shadow: var(--shadow);
-      background: var(--beige);
-      touch-action: pan-y;
-    }
-    .gallery__slider {
-      display: flex; transition: transform 0.35s ease;
-      will-change: transform;
-    }
-    .gallery__slider img {
-      width: 100%; flex-shrink: 0;
-      aspect-ratio: 1; object-fit: cover; display: block;
-    }
-    .gallery__arrows {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      width: 100%; display: flex; justify-content: space-between;
-      padding: 0 0.5rem; pointer-events: none;
-    }
-    .gallery__arrow {
-      pointer-events: all; background: rgba(255,255,255,0.85);
-      border: none; border-radius: 50%; width: 36px; height: 36px;
-      font-size: 1.1rem; cursor: pointer; box-shadow: var(--shadow);
-      display: grid; place-items: center;
-    }
-    .gallery__thumbs {
-      display: flex; gap: 0.6rem; margin-top: 0.8rem;
-      overflow-x: auto; padding-bottom: 0.3rem;
-    }
-    .gallery__thumbs img {
-      width: 72px; height: 72px; object-fit: cover;
-      border-radius: 8px; cursor: pointer; border: 2px solid transparent;
-      transition: border-color 0.2s; flex-shrink: 0;
-    }
-    .gallery__thumbs img.active { border-color: var(--terracotta); }
-
-    /* تفاصيل المنتج */
-    .product-info__badge {
-      display: inline-block; background: var(--terracotta); color: var(--white);
-      font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.8rem;
-      border-radius: 999px; margin-bottom: 0.8rem;
-    }
-    .product-info__name {
-      font-size: 1.5rem; font-weight: 900; line-height: 1.3;
-      color: var(--brown-dark); margin-bottom: 0.8rem;
-    }
-    .product-info__meta {
-      display: flex; align-items: center; gap: 1rem;
-      font-size: 0.85rem; margin-bottom: 1rem;
-      color: var(--brown);
-    }
-    .product-info__meta .stars { color: #e0a426; font-weight: 700; }
-    .product-info__stock {
-  background: #fff3cd; border: 1px solid #ffc107;
-  border-radius: 10px; padding: 0.6rem 1rem;
-  font-size: 0.85rem; font-weight: 700; color: #856404;
-  margin-bottom: 1rem;
+/* ====== Variables & Reset (Mobile First) ====== */
+:root {
+  --terracotta: #c1654a;
+  --terracotta-dark: #a04a32;
+  --beige: #f5ead9;
+  --beige-light: #fdf8f0;
+  --brown: #6b4226;
+  --brown-dark: #4a2d18;
+  --white: #fff;
+  --green: #25d366;
+  --radius: 14px;
+  --shadow: 0 4px 18px rgba(74, 45, 24, 0.12);
 }
-.product-info__pricing {
-      display: flex; align-items: baseline; gap: 0.8rem;
-      margin-bottom: 1.2rem;
-    }
-    .product-info__price {
-      font-size: 2rem; font-weight: 900; color: var(--terracotta);
-    }
-    .product-info__old {
-      font-size: 1rem; color: #9c8771; text-decoration: line-through;
-    }
-    .product-info__shipping {
-      background: #f0faf4; border: 1px solid #c3e6cb;
-      border-radius: 10px; padding: 0.7rem 1rem;
-      font-size: 0.85rem; color: #2d6a4f;
-      margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.5rem;
-    }
-    .product-info__desc {
-      font-size: 0.9rem; color: var(--brown);
-      line-height: 1.9; margin-bottom: 1.5rem;
-      white-space: pre-line;
-    }
-    .product-info__wa {
-      display: block; background: var(--green); color: var(--white);
-      text-align: center; font-weight: 900; font-size: 1.1rem;
-      padding: 0.9rem; border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(37,211,102,0.35);
-      transition: filter 0.2s; margin-bottom: 0.8rem;
-    }
-    .product-info__wa:hover { filter: brightness(0.92); color: var(--white); }
-    .product-info__note {
-      text-align: center; font-size: 0.8rem; color: var(--brown); opacity: 0.8;
-    }
 
-    /* Desktop */
-    @media (min-width: 768px) {
-      .product-layout { flex-direction: row; align-items: flex-start; }
-      .gallery { flex: 1; }
-      .product-info { flex: 1; position: sticky; top: 80px; }
-      .product-info__name { font-size: 1.8rem; }
-    }
-  </style>
-</head>
-<body>
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-  <!-- Header -->
-  <header class="header">
-    <div class="container header__inner">
-      <a href="index.html" class="logo">🏺 <span>شرايبة</span></a>
-      <nav class="nav">
-        <a href="index.html#products">المنتجات</a>
-        <a href="index.html#highlights">لماذا نحن</a>
-        <a href="index.html#contact" class="nav__cta">اطلب الآن</a>
-      </nav>
-    </div>
-  </header>
+body {
+  font-family: "Cairo", sans-serif;
+  background: var(--beige-light);
+  color: var(--brown-dark);
+  line-height: 1.7;
+}
 
-  <!-- شريط الشحن -->
-  <div class="shipping-bar">
-    🚚👈 تكلفة الشحن مشمولة في سعر المنتج
-  </div>
+img { max-width: 100%; display: block; }
+a { text-decoration: none; color: inherit; }
 
-  <main class="product-page">
-    <div class="container">
-      <a href="index.html" class="back-btn">← العودة للمنتجات</a>
+.container { width: 92%; max-width: 1150px; margin: 0 auto; }
 
-      <div class="product-layout" id="productLayout">
-        <div style="text-align:center;padding:3rem;color:var(--brown);">جاري التحميل...</div>
-      </div>
-    </div>
-  </main>
+/* ====== Header ====== */
+.header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(253, 248, 240, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--beige);
+}
+.header__inner { display: flex; align-items: center; justify-content: space-between; padding: 0.8rem 0; }
+.logo { font-weight: 900; font-size: 1.25rem; color: var(--brown-dark); }
+.logo span { color: var(--terracotta); }
+.nav { display: flex; gap: 1rem; align-items: center; font-weight: 600; font-size: 0.9rem; }
+.nav a:hover { color: var(--terracotta); }
+.nav__cta {
+  background: var(--terracotta); color: var(--white);
+  padding: 0.4rem 1rem; border-radius: 999px;
+}
+.nav__cta:hover { background: var(--terracotta-dark); color: var(--white); }
 
-  <!-- منتجات مقترحة -->
-  <section class="related">
-    <div class="container">
-      <h2 class="related__title">منتجات أخرى قد تعجبك</h2>
-      <div class="products__grid" id="relatedGrid"></div>
-    </div>
-  </section>
+/* ====== Hero ====== */
+.hero { background: linear-gradient(160deg, var(--beige) 0%, var(--beige-light) 100%); padding: 2.5rem 0; }
+.hero__inner { display: flex; flex-direction: column; gap: 2rem; }
+.hero__badge {
+  display: inline-block; background: var(--white); color: var(--terracotta);
+  font-weight: 700; font-size: 0.8rem; padding: 0.3rem 0.9rem;
+  border-radius: 999px; box-shadow: var(--shadow); margin-bottom: 1rem;
+}
+.hero h1 { font-size: 2rem; font-weight: 900; line-height: 1.3; }
+.hero h1 span { color: var(--terracotta); }
+.hero p { margin: 1rem 0 1.5rem; color: var(--brown); }
+.hero__actions { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.btn {
+  display: inline-block; padding: 0.7rem 1.6rem; border-radius: 999px;
+  font-weight: 700; transition: all 0.25s ease;
+}
+.btn--primary { background: var(--terracotta); color: var(--white); box-shadow: var(--shadow); }
+.btn--primary:hover { background: var(--terracotta-dark); transform: translateY(-2px); }
+.btn--outline { border: 2px solid var(--brown); color: var(--brown); }
+.btn--outline:hover { background: var(--brown); color: var(--white); }
+.hero__stats { display: flex; gap: 1.5rem; margin-top: 2rem; }
+.hero__stats div { display: flex; flex-direction: column; }
+.hero__stats strong { font-size: 1.3rem; color: var(--terracotta); }
+.hero__stats span { font-size: 0.8rem; color: var(--brown); }
+.hero__slider { position: relative; width: 100%; }
+.hero__slider img {
+  width: 100%; border-radius: var(--radius);
+  aspect-ratio: 1; object-fit: cover;
+  position: absolute; top: 0; left: 0;
+  opacity: 0; transition: opacity 0.5s ease;
+}
+.hero__slider img:first-child { opacity: 1; position: relative; }
+.hero__dots {
+  display: flex; justify-content: center; gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+.hero__dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--brown); opacity: 0.3; cursor: pointer;
+  transition: opacity 0.2s;
+}
+.hero__dot.active { opacity: 1; background: var(--terracotta); }
 
-  <!-- Floating WhatsApp -->
-  <a href="https://wa.me/212688812627" class="wa-float" target="_blank" rel="noopener" aria-label="اطلب عبر واتساب">💬</a>
+.hero__image { position: relative; }
+.hero__image img { border-radius: var(--radius); box-shadow: var(--shadow); aspect-ratio: 1; object-fit: cover; }
+.hero__tag {
+  position: absolute; top: 1rem; right: 1rem;
+  background: var(--terracotta); color: var(--white);
+  font-weight: 700; font-size: 0.85rem;
+  padding: 0.35rem 0.9rem; border-radius: 999px;
+}
 
-  <script src="script.js"></script>
-  <script>
-    let currentIndex = 0;
-    let imgs = [];
-    let startX = 0;
+/* ====== Highlights ====== */
+.highlights { padding: 2.5rem 0; }
+.highlights__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+.highlight {
+  background: var(--white); border-radius: var(--radius);
+  padding: 1.3rem 1rem; text-align: center; box-shadow: var(--shadow);
+}
+.highlight span { font-size: 2rem; }
+.highlight h3 { font-size: 0.95rem; margin: 0.4rem 0 0.2rem; color: var(--brown-dark); }
+.highlight p { font-size: 0.8rem; color: var(--brown); }
 
-    function loadProduct() {
-      const params = new URLSearchParams(window.location.search);
-      const id = parseInt(params.get("id"));
-      const product = products.find(p => p.id === id);
+/* ====== Products ====== */
+.products { padding: 2.5rem 0 3.5rem; }
+.section-head { text-align: center; margin-bottom: 2rem; }
+.section-head h2 { font-size: 1.7rem; font-weight: 900; }
+.section-head p { color: var(--brown); }
+.products__grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.9rem; }
 
-      if (!product) {
-        document.getElementById("productLayout").innerHTML =
-          '<p style="text-align:center;padding:3rem;">المنتج غير موجود</p>';
-        return;
-      }
+/* Temu/AliExpress style card */
+.card {
+  background: var(--white); border-radius: var(--radius);
+  overflow: hidden; box-shadow: var(--shadow);
+  display: flex; flex-direction: column;
+  transition: transform 0.25s ease;
+  opacity: 0; transform: translateY(18px);
+}
+.card.visible { opacity: 1; transform: translateY(0); transition: all 0.5s ease; }
+.card:hover { transform: translateY(-4px); }
+.card__media { position: relative; }
+.card__media img { aspect-ratio: 1; object-fit: cover; width: 100%; }
+.card__badge {
+  position: absolute; top: 0.5rem; right: 0.5rem;
+  background: var(--terracotta); color: var(--white);
+  font-size: 0.7rem; font-weight: 700;
+  padding: 0.15rem 0.6rem; border-radius: 999px;
+}
+.card__body { padding: 0.7rem 0.8rem 0.9rem; display: flex; flex-direction: column; flex: 1; }
+.card__name { font-size: 0.9rem; font-weight: 700; line-height: 1.4; }
+.card__desc {
+  font-size: 0.75rem; color: var(--brown); margin: 0.25rem 0 0.5rem;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.card__meta { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: #e0a426; margin-bottom: 0.4rem; }
+.card__meta .sold { color: var(--brown); }
+.card__pricing { display: flex; align-items: baseline; gap: 0.5rem; margin-bottom: 0.6rem; }
+.card__price { font-size: 1.15rem; font-weight: 900; color: var(--terracotta); }
+.card__old { font-size: 0.78rem; color: #9c8771; text-decoration: line-through; }
+.card__details {
+  text-align: center; font-weight: 700; font-size: 0.85rem;
+  padding: 0.55rem; border-radius: 9px; transition: all 0.2s;
+  border: 2px solid var(--terracotta); color: var(--terracotta);
+  margin-bottom: 0.5rem; display: block;
+}
+.card__details:hover { background: var(--terracotta); color: var(--white); }
+.card__wa {
+  margin-top: auto; background: var(--green); color: var(--white);
+  text-align: center; font-weight: 700; font-size: 0.85rem;
+  padding: 0.55rem; border-radius: 9px; transition: filter 0.2s;
+}
+.card__wa:hover { filter: brightness(0.92); }
 
-      document.title = `شرايبة | ${product.name}`;
+/* ====== Footer ====== */
+.footer { background: var(--brown-dark); color: var(--beige); padding: 2.5rem 0 1rem; }
+.footer__inner { display: flex; flex-direction: column; gap: 1.5rem; }
+.logo--light { color: var(--beige); }
+.footer h4 { color: var(--white); margin-bottom: 0.5rem; }
+.footer a { color: var(--terracotta); }
+.footer__copy { text-align: center; font-size: 0.8rem; margin-top: 2rem; opacity: 0.7; }
 
-      imgs = product.images || [product.img];
-      currentIndex = 0;
-      const waMsg = `مرحبًا 👋 أريد طلب: ${product.name} بسعر ${product.price} درهم 🏺`;
-      const waUrl = `https://wa.me/212688812627?text=${encodeURIComponent(waMsg)}`;
+/* ====== Floating WhatsApp ====== */
+.wa-float {
+  position: fixed; bottom: 1.2rem; left: 1.2rem; z-index: 60;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--green); display: grid; place-items: center;
+  font-size: 1.6rem; box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
 
-      document.getElementById("productLayout").innerHTML = `
-        <div class="gallery">
-          <div class="gallery__main" id="galleryMain">
-            <div class="gallery__slider" id="gallerySlider">
-              ${imgs.map((src, i) => `<img src="${src}" alt="صورة ${i+1}" />`).join("")}
-            </div>
-            ${imgs.length > 1 ? `
-            <div class="gallery__arrows">
-              <button class="gallery__arrow" onclick="prevImg()">‹</button>
-              <button class="gallery__arrow" onclick="nextImg()">›</button>
-            </div>` : ""}
-          </div>
-          ${imgs.length > 1 ? `
-          <div class="gallery__thumbs">
-            ${imgs.map((src, i) => `
-              <img src="${src}" alt="صورة ${i+1}" class="${i===0?'active':''}"
-                onclick="goToImg(${i})" />
-            `).join("")}
-          </div>` : ""}
-        </div>
+/* ====== Tablet ≥ 640px ====== */
+@media (min-width: 640px) {
+  .products__grid { grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+  .highlights__grid { grid-template-columns: repeat(4, 1fr); }
+  .hero h1 { font-size: 2.6rem; }
+}
 
-        <div class="product-info">
-          ${product.badge ? `<span class="product-info__badge">${product.badge}</span>` : ""}
-          <h1 class="product-info__name">${product.name}</h1>
-          <div class="product-info__meta">
-            <span class="stars">★ ${product.rating}</span>
-            <span>| تم بيع +${product.sold} قطعة</span>
-          </div>
-          ${product.stock ? `<div class="product-info__stock">⚠️ باقي ${product.stock} قطع فقط في المخزون</div>` : ""}
-          <div class="product-info__pricing">
-            <span class="product-info__price">${product.price} درهم</span>
-            <span class="product-info__old">${product.oldPrice} درهم</span>
-          </div>
-          <div class="product-info__shipping">
-            🚚 التوصيل مجاني لجميع مدن المغرب
-          </div>
-          <p class="product-info__desc">${product.fullDesc || product.desc}</p>
-          <a href="${waUrl}" class="product-info__wa" target="_blank" rel="noopener">
-            💬 اطلب الآن عبر واتساب
-          </a>
-          <p class="product-info__note">📦 الدفع عند الاستلام</p>
-        </div>
-      `;
-
-      loadRelated(id);
-      const main = document.getElementById("galleryMain");
-      main.addEventListener("touchstart", e => { startX = e.touches[0].clientX; }, { passive: true });
-      main.addEventListener("touchend", e => {
-        const diff = startX - e.changedTouches[0].clientX;
-        if (Math.abs(diff) > 40) diff > 0 ? nextImg() : prevImg();
-      });
-    }
-
-    function updateSlider() {
-      const slider = document.getElementById("gallerySlider");
-      if (slider) slider.style.transform = `translateX(${currentIndex * 100}%)`;
-      document.querySelectorAll(".gallery__thumbs img").forEach((el, i) => {
-        el.classList.toggle("active", i === currentIndex);
-      });
-    }
-
-    function nextImg() {
-      currentIndex = (currentIndex + 1) % imgs.length;
-      updateSlider();
-    }
-
-    function prevImg() {
-      currentIndex = (currentIndex - 1 + imgs.length) % imgs.length;
-      updateSlider();
-    }
-
-    function goToImg(i) {
-      currentIndex = i;
-      updateSlider();
-    }
-
-    function loadRelated(currentId) {
-      const related = products.filter(p => !p.hidden && p.id !== currentId);
-      const grid = document.getElementById("relatedGrid");
-      if (!grid || related.length === 0) return;
-      grid.innerHTML = related.map(p => `
-        <article class="card visible">
-          <a href="product.html?id=${p.id}" style="display:contents">
-            <div class="card__media">
-              <img src="${p.img}" alt="${p.name}" loading="lazy" />
-              ${p.badge ? `<span class="card__badge">${p.badge}</span>` : ""}
-            </div>
-          </a>
-          <div class="card__body">
-            <h3 class="card__name">${p.name}</h3>
-            <div class="card__pricing">
-              <span class="card__price">${p.price} درهم</span>
-              <span class="card__old">${p.oldPrice} درهم</span>
-            </div>
-            <a class="card__details" href="product.html?id=${p.id}">🔍 تفاصيل المنتج</a>
-            <a class="card__wa" href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`مرحبًا 👋 أريد طلب: ${p.name} بسعر ${p.price} درهم 🏺`)}" target="_blank" rel="noopener">اطلب عبر واتساب 💬</a>
-          </div>
-        </article>
-      `).join("");
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      loadProduct();
-    });
-  </script>
-</body>
-</html>
+/* ====== Desktop ≥ 960px ====== */
+@media (min-width: 960px) {
+  .hero__inner { flex-direction: row; align-items: center; }
+  .hero__content, .hero__image { flex: 1; }
+  .products__grid { grid-template-columns: repeat(5, 1fr); }
+  .footer__inner { flex-direction: row; justify-content: space-between; }
+}
