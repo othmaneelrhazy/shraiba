@@ -35,13 +35,22 @@
           <a href="https://wa.me/212688812627" class="btn btn--outline" target="_blank" rel="noopener">تواصل معنا</a>
         </div>
         <div class="hero__stats">
-          <div><strong>+5000</strong><span>زبون سعيد</span></div>
+          <div><strong>+247</strong><span>زبون سعيد</span></div>
           <div><strong>4.9★</strong><span>تقييم العملاء</span></div>
           <div><strong>48س</strong><span>توصيل سريع</span></div>
         </div>
       </div>
       <div class="hero__image">
-        <img src="images/product1-1.jpg" alt="قنينة شرايبة الفخارية مع كوب" />
+        <div class="hero__slider" id="heroSlider">
+          <img src="images/product2-1.jpg" alt="قنينة الطين الكبيرة" />
+          <img src="images/product2-2.jpg" alt="قنينة الطين الكبيرة" />
+          <img src="images/product2-3.jpg" alt="قنينة الطين الكبيرة" />
+        </div>
+        <div class="hero__dots" id="heroDots">
+          <span class="hero__dot active" onclick="heroGoTo(0)"></span>
+          <span class="hero__dot" onclick="heroGoTo(1)"></span>
+          <span class="hero__dot" onclick="heroGoTo(2)"></span>
+        </div>
         <div class="hero__tag">🔥 الأكثر مبيعًا</div>
       </div>
     </div>
@@ -88,5 +97,34 @@
   <a href="https://wa.me/212688812627" class="wa-float" target="_blank" rel="noopener" aria-label="اطلب عبر واتساب">💬</a>
 
   <script src="script.js"></script>
-</body>
+  <script>
+    // Hero Slider
+    let heroIndex = 0;
+    const heroImgs = document.querySelectorAll(".hero__slider img");
+    const heroDots = document.querySelectorAll(".hero__dot");
+
+    function heroGoTo(i) {
+      heroImgs.forEach(img => img.style.opacity = "0");
+      heroDots.forEach(d => d.classList.remove("active"));
+      heroIndex = i;
+      heroImgs[i].style.opacity = "1";
+      heroDots[i].classList.add("active");
+    }
+
+    // Auto slide every 3 seconds
+    setInterval(() => {
+      heroGoTo((heroIndex + 1) % heroImgs.length);
+    }, 3000);
+
+    // Touch swipe
+    let hStartX = 0;
+    const sliderEl = document.querySelector(".hero__slider");
+    if (sliderEl) {
+      sliderEl.addEventListener("touchstart", e => hStartX = e.touches[0].clientX, {passive:true});
+      sliderEl.addEventListener("touchend", e => {
+        const diff = hStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 40) heroGoTo(diff > 0 ? (heroIndex+1)%heroImgs.length : (heroIndex-1+heroImgs.length)%heroImgs.length);
+      });
+    }
+  </script>
 </html>
