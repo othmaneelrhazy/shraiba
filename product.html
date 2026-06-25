@@ -88,12 +88,18 @@
     }
     .product-info__meta .stars { color: #e0a426; font-weight: 700; }
     .product-info__stock {
-  background: #fff3cd; border: 1px solid #ffc107;
-  border-radius: 10px; padding: 0.6rem 1rem;
-  font-size: 0.85rem; font-weight: 700; color: #856404;
-  margin-bottom: 1rem;
-}
-.product-info__pricing {
+      background: #fff3cd; border: 1px solid #ffc107;
+      border-radius: 10px; padding: 0.6rem 1rem;
+      font-size: 0.85rem; font-weight: 700; color: #856404;
+      margin-bottom: 1rem;
+    }
+    .product-info__stock--available {
+      background: #f0faf4; border: 1px solid #c3e6cb;
+      border-radius: 10px; padding: 0.6rem 1rem;
+      font-size: 0.85rem; font-weight: 700; color: #2d6a4f;
+      margin-bottom: 1rem;
+    }
+    .product-info__pricing {
       display: flex; align-items: baseline; gap: 0.8rem;
       margin-bottom: 1.2rem;
     }
@@ -114,12 +120,43 @@
       line-height: 1.9; margin-bottom: 1.5rem;
       white-space: pre-line;
     }
+
+    /* Quantity selector */
+    .qty-wrapper {
+      display: flex; align-items: center; gap: 0; margin-bottom: 1rem;
+    }
+    .qty-label {
+      font-size: 0.9rem; font-weight: 700; color: var(--brown-dark);
+      margin-left: 0.8rem;
+    }
+    .qty-box {
+      display: flex; align-items: center; border: 2px solid var(--brown);
+      border-radius: 10px; overflow: hidden;
+    }
+    .qty-btn {
+      background: var(--beige); border: none; cursor: pointer;
+      font-size: 1.3rem; font-weight: 900; color: var(--brown-dark);
+      width: 40px; height: 40px; display: grid; place-items: center;
+      transition: background 0.15s;
+    }
+    .qty-btn:hover { background: #e8ddd0; }
+    .qty-num {
+      min-width: 44px; text-align: center; font-size: 1.1rem;
+      font-weight: 900; color: var(--brown-dark);
+    }
+    .qty-total {
+      font-size: 0.85rem; color: var(--brown); margin-top: 0.3rem;
+      margin-bottom: 1rem;
+    }
+
     .product-info__wa {
       display: block; background: var(--green); color: var(--white);
       text-align: center; font-weight: 900; font-size: 1.1rem;
       padding: 0.9rem; border-radius: 12px;
       box-shadow: 0 4px 15px rgba(37,211,102,0.35);
       transition: filter 0.2s; margin-bottom: 0.8rem;
+      cursor: pointer; border: none; width: 100%;
+      text-decoration: none;
     }
     .product-info__wa:hover { filter: brightness(0.92); color: var(--white); }
     .product-info__note {
@@ -180,11 +217,32 @@
     let currentIndex = 0;
     let imgs = [];
     let startX = 0;
+    let currentProduct = null;
+    let currentQty = 1;
+
+    function updateQty(delta) {
+      currentQty = Math.max(1, currentQty + delta);
+      const numEl = document.getElementById("qtyNum");
+      const totalEl = document.getElementById("qtyTotal");
+      const waBtn = document.getElementById("waBtn");
+      if (numEl) numEl.textContent = currentQty;
+      if (totalEl) totalEl.textContent = `الإجمالي: ${currentQty * currentProduct.price} درهم`;
+      if (waBtn) {
+        const q = currentQty;
+        const total = q * currentProduct.price;
+        const msg = q > 1
+          ? `مرحبًا 👋 أريد طلب: ${currentProduct.name}\nالكمية: ${q} قطع\nالسعر الإجمالي: ${total} درهم 🏺`
+          : `مرحبًا 👋 أريد طلب: ${currentProduct.name} بسعر ${currentProduct.price} درهم 🏺`;
+        waBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+      }
+    }
 
     function loadProduct() {
       const params = new URLSearchParams(window.location.search);
       const id = parseInt(params.get("id"));
       const product = products.find(p => p.id === id);
+      currentProduct = product;
+      currentQty = 1;
 
       if (!product) {
         document.getElementById("productLayout").innerHTML =
@@ -196,8 +254,30 @@
 
       imgs = product.images || [product.img];
       currentIndex = 0;
-      const waMsg = `مرحبًا 👋 أريد طلب: ${product.name} بسعر ${product.price} درهم 🏺`;
-      const waUrl = `https://wa.me/212688812627?text=${encodeURIComponent(waMsg)}`;
+
+      const initMsg = `مرحبًا 👋 أريد طلب: ${product.name} بسعر ${product.price} درهم 🏺`;
+      const initUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(initMsg)}`;
+
+      // Stock display
+      let stockHtml = "";
+      if (product.stock) {
+        stockHtml = `<div class="product-info__stock">⚠️ باقي ${product.stock} قطع فقط في المخزون</div>`;
+      } else if (product.stock === null) {
+        stockHtml = `<div class="product-info__stock--available">✅ متوفر في المخزون</div>`;
+      }
+
+      // Quantity selector — only for hasQuantity products
+      const qtyHtml = product.hasQuantity ? `
+        <div class="qty-wrapper">
+          <span class="qty-label">الكمية:</span>
+          <div class="qty-box">
+            <button class="qty-btn" onclick="updateQty(-1)">−</button>
+            <span class="qty-num" id="qtyNum">1</span>
+            <button class="qty-btn" onclick="updateQty(1)">+</button>
+          </div>
+        </div>
+        <p class="qty-total" id="qtyTotal">الإجمالي: ${product.price} درهم</p>
+      ` : "";
 
       document.getElementById("productLayout").innerHTML = `
         <div class="gallery">
@@ -227,7 +307,7 @@
             <span class="stars">★ ${product.rating}</span>
             <span>| تم بيع +${product.sold} قطعة</span>
           </div>
-          ${product.stock ? `<div class="product-info__stock">⚠️ باقي ${product.stock} قطع فقط في المخزون</div>` : ""}
+          ${stockHtml}
           <div class="product-info__pricing">
             <span class="product-info__price">${product.price} درهم</span>
             <span class="product-info__old">${product.oldPrice} درهم</span>
@@ -236,7 +316,8 @@
             🚚 التوصيل مجاني لجميع مدن المغرب
           </div>
           <p class="product-info__desc">${product.fullDesc || product.desc}</p>
-          <a href="${waUrl}" class="product-info__wa" target="_blank" rel="noopener">
+          ${qtyHtml}
+          <a href="${initUrl}" id="waBtn" class="product-info__wa" target="_blank" rel="noopener">
             💬 اطلب الآن عبر واتساب
           </a>
           <p class="product-info__note">📦 الدفع عند الاستلام</p>
