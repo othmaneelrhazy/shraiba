@@ -1,14 +1,15 @@
 // ====== Store Configuration ======
 const WHATSAPP_NUMBER = "212688812627"; // ← ضع رقم الواتساب الخاص بك هنا
 
-// ====== Product Data (10 products) ======
+// ====== Product Data ======
 const products = [
   {
     id: 1,
     name: "قنينة فخارية مع كوب",
     desc: "اشرب الماء كما كان يشرب أجدادك — من طين طبيعي 100% بدون أي مواد كيماوية. تحمل لتر كامل وتبرّد الماء بشكل طبيعي. شكل قنينة لوسيور المحبوبة، بروح فخارية أصيلة.",
     fullDesc: "قنينة فخارية مصنوعة يدوياً من طين طبيعي 100% بدون أي مواد كيماوية أو إضافات. مستوحاة من شكل قنينة لوسيور المغربية المحبوبة، حُوِّلت إلى تحفة فخارية أصيلة.\n\n✅ تحمل لتراً كاملاً من الماء\n✅ تبرّد الماء بشكل طبيعي بدون ثلاجة\n✅ آمنة تماماً — طين طبيعي خرج من الفرن على 950 درجة\n✅ مع كوب فخاري مميز\n✅ توصيل لجميع مدن المغرب",
-    price: 120, oldPrice: 160, rating: "5.0", sold: 47, stock: 8, badge: "الأكثر مبيعًا",
+    price: 119, oldPrice: 160, rating: "5.0", sold: 47, stock: 8, badge: "الأكثر مبيعًا",
+    hasQuantity: true,
     img: "images/product1-1.jpg",
     images: ["images/product1-1.jpg","images/product1-2.jpg","images/product1-3.jpg"]
   },
@@ -18,6 +19,7 @@ const products = [
     desc: "بدون ثلاجة، بدون كهرباء، بدون بلاستيك — الطين يبرّد الماء بشكل طبيعي كما كان أجدادنا. تحمل لتراً ونصف، آمنة 100%، خرجت من الفرن على 950 درجة.",
     fullDesc: "قنينة فخارية كبيرة مصنوعة من طين مغربي طبيعي 100%، مستوحاة من شكل القنينة الزجاجية الكلاسيكية.\n\n✅ تحمل لتراً ونصف من الماء\n✅ تبرّد الماء طبيعياً — الطين يتنفس ويعطي الماء طعماً نقياً\n✅ مصنوعة يدوياً وحُرقت في الفرن على 950 درجة مئوية\n✅ آمنة تماماً للاستخدام اليومي\n✅ توصيل لجميع مدن المغرب شامل في السعر",
     price: 139, oldPrice: 180, rating: "4.9", sold: 23, stock: 5, badge: "جديد",
+    hasQuantity: true,
     img: "images/product2-1.jpg",
     images: ["images/product2-1.jpg","images/product2-2.jpg","images/product2-3.jpg"]
   },
@@ -50,9 +52,9 @@ const products = [
 هذا المنتج غير مخصص للاستهلاك أو الأكل، ويُستخدم للاستعمال الخارجي والأعمال اليدوية فقط. لا ننصح إطلاقًا بتناول الطين أو اتباع المقاطع المنتشرة على مواقع التواصل التي تروج لذلك، لما قد يترتب عليه من مخاطر صحية محتملة.
 
 في حال استخدامه للعناية بالبشرة، يُنصح بإجراء اختبار على جزء صغير من الجلد أولًا للتأكد من ملاءمته، والتوقف عن استخدامه عند ظهور أي تهيج.`,
-    price: 65, oldPrice: 90, rating: "4.8", sold: 0, stock: 10, badge: "جديد",
+    price: 65, oldPrice: 90, rating: "4.8", sold: 354, stock: null, badge: "جديد",
     img: "images/product3-1.jpg",
-    images: ["images/product3-1.jpg", "images/product3-2.jpg", "images/product3-3.jpg", "images/product3-4.jpg"]
+    images: ["images/product3-1.jpg","images/product3-2.jpg","images/product3-3.jpg","images/product3-4.jpg","images/product3-5.jpg"]
   },
   { id: 4,  hidden: true, name: "قريباً", desc: "", price: 0, oldPrice: 0, rating: "5.0", sold: 0 },
   { id: 5,  hidden: true, name: "قريباً", desc: "", price: 0, oldPrice: 0, rating: "5.0", sold: 0 },
@@ -66,12 +68,16 @@ const products = [
 // ====== Helpers ======
 const formatPrice = (p) => `${p} درهم`;
 
-const waLink = (product) => {
-  const msg = `مرحبًا 👋 أريد طلب: ${product.name} بسعر ${formatPrice(product.price)} 🏺`;
+const waLink = (product, qty) => {
+  const q = qty || 1;
+  const total = product.price * q;
+  const msg = q > 1
+    ? `مرحبًا 👋 أريد طلب: ${product.name}\nالكمية: ${q} قطع\nالسعر الإجمالي: ${total} درهم 🏺`
+    : `مرحبًا 👋 أريد طلب: ${product.name} بسعر ${formatPrice(product.price)} 🏺`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 };
 
-// ====== Render Products ======
+// ====== Render Products (index page) ======
 function renderProducts() {
   const grid = document.getElementById("productGrid");
   grid.innerHTML = products
@@ -133,6 +139,15 @@ function initSmoothScroll() {
       }
     });
   });
+}
+
+// ====== Hero Slider ======
+let heroIdx = 0;
+function heroGoTo(i) {
+  heroIdx = i;
+  const slider = document.getElementById("heroSlider");
+  if (slider) slider.style.transform = `translateX(${heroIdx * 100}%)`;
+  document.querySelectorAll(".hero__dot").forEach((d, j) => d.classList.toggle("active", j === heroIdx));
 }
 
 // ====== Init ======
