@@ -162,6 +162,19 @@
     .product-info__note {
       text-align: center; font-size: 0.8rem; color: var(--brown); opacity: 0.8;
     }
+    .product-info__cleaning {
+      background: #fff5f5; border: 2px solid #e74c3c;
+      border-radius: 12px; padding: 1rem 1.1rem;
+      margin-bottom: 1.2rem; color: #c0392b;
+      font-size: 0.88rem; line-height: 1.8;
+    }
+    .product-info__cleaning strong {
+      display: block; font-size: 0.95rem; font-weight: 900;
+      margin-bottom: 0.5rem; color: #c0392b;
+    }
+    .product-info__cleaning .cleaning-tip {
+      color: #2d6a4f; font-weight: 700; margin-top: 0.5rem; display: block;
+    }
 
     /* Desktop */
     @media (min-width: 768px) {
@@ -317,6 +330,12 @@
           </div>
           <p class="product-info__desc">${product.fullDesc || product.desc}</p>
           ${qtyHtml}
+          ${product.hasQuantity ? `
+          <div class="product-info__cleaning">
+            <strong>⚠️ تنبيه: طريقة تنظيف القنينة الفخارية</strong>
+            يُمنع استخدام المنظفات الكيميائية أو الصابون لغسل القنينة الفخارية، لأنها تمتص المواد الكيميائية وتؤثر على جودة الماء.
+            <span class="cleaning-tip">✅ الطريقة الصحيحة: اغسل القنينة بالماء والملح — الملح يقتل البكتيريا بشكل طبيعي ويجعل القنينة نظيفة وصالحة للاستخدام كما كانت.</span>
+          </div>` : ""}
           <a href="${initUrl}" id="waBtn" class="product-info__wa" target="_blank" rel="noopener">
             💬 اطلب الآن عبر واتساب
           </a>
