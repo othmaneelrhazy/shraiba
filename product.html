@@ -162,6 +162,32 @@
     .product-info__note {
       text-align: center; font-size: 0.8rem; color: var(--brown); opacity: 0.8;
     }
+    /* Weight selector for clay product */
+    .weight-selector { margin-bottom: 1.2rem; }
+    .weight-selector__label {
+      font-size: 0.9rem; font-weight: 700; color: var(--brown-dark);
+      margin-bottom: 0.7rem; display: block;
+    }
+    .weight-options {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.6rem;
+    }
+    .weight-btn {
+      border: 2px solid #d4c4b0; border-radius: 12px;
+      background: var(--white); cursor: pointer; padding: 0.7rem 0.5rem;
+      text-align: center; transition: all 0.2s; font-family: inherit;
+    }
+    .weight-btn:hover { border-color: var(--terracotta); }
+    .weight-btn.active {
+      border-color: var(--terracotta); background: #fff5f0;
+    }
+    .weight-btn__size {
+      display: block; font-size: 0.95rem; font-weight: 900;
+      color: var(--brown-dark);
+    }
+    .weight-btn__price {
+      display: block; font-size: 1rem; font-weight: 900;
+      color: var(--terracotta); margin-top: 0.2rem;
+    }
     .product-info__cleaning {
       background: #fff5f5; border: 2px solid #e74c3c;
       border-radius: 12px; padding: 1rem 1.1rem;
@@ -250,6 +276,34 @@
       }
     }
 
+    // Weight options for clay product
+    const weightOptions = [
+      { label: "نص كيلو", price: 65, oldPrice: 90 },
+      { label: "1 كيلو",  price: 100, oldPrice: 160 },
+      { label: "2 كيلو",  price: 150, oldPrice: 220 },
+      { label: "3 كيلو",  price: 200, oldPrice: 280 },
+    ];
+    let selectedWeight = weightOptions[0];
+
+    function selectWeight(idx) {
+      selectedWeight = weightOptions[idx];
+      // Update active button
+      document.querySelectorAll(".weight-btn").forEach((btn, i) => {
+        btn.classList.toggle("active", i === idx);
+      });
+      // Update price display
+      const priceEl = document.getElementById("clayPrice");
+      const oldEl   = document.getElementById("clayOldPrice");
+      if (priceEl) priceEl.textContent = selectedWeight.price + " درهم";
+      if (oldEl)   oldEl.textContent   = selectedWeight.oldPrice + " درهم";
+      // Update whatsapp link
+      const waBtn = document.getElementById("waBtn");
+      if (waBtn) {
+        const msg = `مرحبًا 👋 أريد طلب: الطين الأحمر الطبيعي\nالوزن: ${selectedWeight.label}\nالسعر: ${selectedWeight.price} درهم 🏺`;
+        waBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
+      }
+    }
+
     function loadProduct() {
       const params = new URLSearchParams(window.location.search);
       const id = parseInt(params.get("id"));
@@ -268,7 +322,9 @@
       imgs = product.images || [product.img];
       currentIndex = 0;
 
-      const initMsg = `مرحبًا 👋 أريد طلب: ${product.name} بسعر ${product.price} درهم 🏺`;
+      const initMsg = product.id === 3
+        ? `مرحبًا 👋 أريد طلب: الطين الأحمر الطبيعي\nالوزن: نص كيلو\nالسعر: 65 درهم 🏺`
+        : `مرحبًا 👋 أريد طلب: ${product.name} بسعر ${product.price} درهم 🏺`;
       const initUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(initMsg)}`;
 
       // Stock display
@@ -278,6 +334,21 @@
       } else if (product.stock === null) {
         stockHtml = `<div class="product-info__stock--available">✅ متوفر في المخزون</div>`;
       }
+
+      // Weight selector for clay product (id 3)
+      const weightHtml = product.id === 3 ? `
+        <div class="weight-selector">
+          <span class="weight-selector__label">اختر الوزن:</span>
+          <div class="weight-options">
+            ${weightOptions.map((w, i) => `
+              <button class="weight-btn ${i===0?'active':''}" onclick="selectWeight(${i})">
+                <span class="weight-btn__size">${w.label}</span>
+                <span class="weight-btn__price">${w.price} درهم</span>
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      ` : "";
 
       // Quantity selector — only for hasQuantity products
       const qtyHtml = product.hasQuantity ? `
@@ -322,13 +393,14 @@
           </div>
           ${stockHtml}
           <div class="product-info__pricing">
-            <span class="product-info__price">${product.price} درهم</span>
-            <span class="product-info__old">${product.oldPrice} درهم</span>
+            <span class="product-info__price" id="${product.id===3?'clayPrice':''}">${product.price} درهم</span>
+            <span class="product-info__old" id="${product.id===3?'clayOldPrice':''}">${product.oldPrice} درهم</span>
           </div>
           <div class="product-info__shipping">
             🚚 التوصيل مجاني لجميع مدن المغرب
           </div>
           <p class="product-info__desc">${product.fullDesc || product.desc}</p>
+          ${weightHtml}
           ${qtyHtml}
           ${product.hasQuantity ? `
           <div class="product-info__cleaning">
