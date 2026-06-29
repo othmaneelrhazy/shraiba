@@ -1,3 +1,7 @@
+// ====== Language Detection ======
+const LANG = navigator.language || navigator.userLanguage || "ar";
+const IS_AR = LANG.startsWith("ar") || LANG.startsWith("fa") || LANG.startsWith("ur");
+
 // ====== Store Configuration ======
 const WHATSAPP_NUMBER = "212688812627"; // ← ضع رقم الواتساب الخاص بك هنا
 
@@ -48,8 +52,7 @@ const products = [
 ✅ مناسب للاستعمالات الخارجية والحرفية
 ✅ متعدد الاستخدامات
 
-⚠️ تنبيه مهم
-هذا المنتج غير مخصص للاستهلاك أو الأكل، ويُستخدم للاستعمال الخارجي والأعمال اليدوية فقط. لا ننصح إطلاقًا بتناول الطين أو اتباع المقاطع المنتشرة على مواقع التواصل التي تروج لذلك، لما قد يترتب عليه من مخاطر صحية محتملة.
+[[WARN_START]]⚠️ تنبيه مهم[[WARN_TITLE_END]]هذا المنتج غير مخصص للاستهلاك أو الأكل، ويُستخدم للاستعمال الخارجي والأعمال اليدوية فقط. لا ننصح إطلاقًا بتناول الطين أو اتباع المقاطع المنتشرة على مواقع التواصل التي تروج لذلك، لما قد يترتب عليه من مخاطر صحية محتملة.[[WARN_END]]
 
 في حال استخدامه للعناية بالبشرة، يُنصح بإجراء اختبار على جزء صغير من الجلد أولًا للتأكد من ملاءمته، والتوقف عن استخدامه عند ظهور أي تهيج.`,
     price: 65, oldPrice: 90, rating: "4.8", sold: 354, stock: null, badge: "جديد",
@@ -66,9 +69,10 @@ const products = [
 ];
 
 // ====== Helpers ======
-const formatPrice = (p) => `${p} درهم`;
+const formatPrice = (p) => IS_AR ? `${p} درهم` : `$${p}`;
 
 const waLink = (product, qty) => {
+  const pr = getProduct(product.id) || product;
   const q = qty || 1;
   const total = product.price * q;
   const msg = q > 1
@@ -76,6 +80,67 @@ const waLink = (product, qty) => {
     : `مرحبًا 👋 أريد طلب: ${product.name} بسعر ${formatPrice(product.price)} 🏺`;
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
 };
+
+// ====== English Product Data ======
+const productsEN = [
+  {
+    id: 1,
+    name: "Handmade Ceramic Water Bottle with Cup",
+    desc: "Drink water the way your ancestors did — from 100% natural clay, no chemicals. Holds 1 full liter and naturally cools your water. A beloved Moroccan bottle shape, reimagined in authentic pottery.",
+    fullDesc: "Handmade ceramic water bottle crafted from 100% natural clay with no chemicals or additives. Inspired by the iconic Moroccan water bottle shape, transformed into an authentic pottery masterpiece.\n\n✅ Holds 1 full liter of water\n✅ Naturally cools water — no fridge needed\n✅ Completely safe — natural clay fired at 950°C\n✅ Comes with a matching ceramic cup\n✅ Free delivery across Morocco",
+    price: 119, oldPrice: 160, currency: "$",
+    badge: "Best Seller",
+  },
+  {
+    id: 2,
+    name: "Large Clay Water Bottle — 1.5 Liters",
+    desc: "No fridge, no electricity, no plastic — clay naturally cools your water just like our ancestors knew. Holds 1.5 liters, 100% safe, fired at 950°C.",
+    fullDesc: "Large ceramic bottle made from 100% natural Moroccan clay, inspired by the classic glass bottle shape.\n\n✅ Holds 1.5 liters of water\n✅ Naturally cools water — clay breathes and gives water a pure taste\n✅ Handmade and kiln-fired at 950°C\n✅ Completely safe for daily use\n✅ Free delivery across Morocco included in price",
+    price: 139, oldPrice: 180, currency: "$",
+    badge: "New",
+  },
+  {
+    id: 3,
+    name: "Natural Red Clay",
+    desc: "100% natural red clay from natural sources. Suitable for skincare, haircare, pottery, and handcrafts. Free from chemical additives.",
+    fullDesc: `Natural Red Clay
+
+100% natural red clay, sourced from nature and used for centuries in traditional crafts and natural care recipes. Known for its smooth texture and rich red color, making it suitable for various uses.
+
+Uses:
+
+🌿 Natural Skin & Hair Care
+Used to prepare face and hair masks by mixing with rose water or natural ingredients, as part of traditional care routines in many regions, including Morocco.
+
+🏺 Pottery & Handcrafts
+Ideal for craftspeople and hobbyists in pottery, sculpting, and artistic creations. Can also be used in educational and creative projects.
+
+🧖 Traditional Uses
+Red clay has been used in some cultures in traditional care practices, such as preparing external body masks or poultices, according to local customs.
+
+Product Features:
+✅ 100% natural clay
+✅ Free from chemical additives
+✅ Suitable for external and craft use
+✅ Multi-purpose
+
+[[WARN_START]]⚠️ Important Warning[[WARN_TITLE_END]]This product is NOT intended for consumption or eating, and is for external use and handcrafts only. We strongly advise against eating clay or following videos circulating on social media promoting this, as it may cause serious health risks.[[WARN_END]]
+
+If used for skincare, it is recommended to do a patch test on a small area of skin first to check compatibility, and stop use if any irritation occurs.`,
+    price: 65, oldPrice: 90, currency: "$",
+    badge: "New",
+  },
+];
+
+// ====== Get active product list ======
+function getProducts() { return IS_AR ? products : productsEN; }
+function getProduct(id) {
+  const base = products.find(p => p.id === id);
+  if (!base) return null;
+  if (IS_AR) return base;
+  const en = productsEN.find(p => p.id === id);
+  return en ? { ...base, ...en } : base;
+}
 
 // ====== Render Products (index page) ======
 function renderProducts() {
@@ -87,18 +152,18 @@ function renderProducts() {
     <article class="card">
       <div class="card__media">
         <img src="${p.img || `https://picsum.photos/seed/pottery-${p.id}/400/400`}" alt="${p.name}" loading="lazy" />
-        ${p.badge ? `<span class="card__badge">${p.badge}</span>` : ""}
+        ${(getProduct(p.id)?.badge || p.badge) ? `<span class="card__badge">${getProduct(p.id)?.badge || p.badge}</span>` : ""}
       </div>
       <div class="card__body">
-        <h3 class="card__name">${p.name}</h3>
-        <p class="card__desc">${p.desc}</p>
+        <h3 class="card__name">${getProduct(p.id)?.name || p.name}</h3>
+        <p class="card__desc">${getProduct(p.id)?.desc || p.desc}</p>
         <div class="card__meta">
           <span>★ ${p.rating}</span>
           <span class="sold">| تم بيع +${p.sold}</span>
         </div>
         <div class="card__pricing">
-          <span class="card__price">${formatPrice(p.price)}</span>
-          <span class="card__old">${formatPrice(p.oldPrice)}</span>
+          <span class="card__price">${formatPrice(getProduct(p.id)?.price || p.price)}</span>
+          <span class="card__old">${formatPrice(getProduct(p.id)?.oldPrice || p.oldPrice)}</span>
         </div>
         <a class="card__details" href="product.html?id=${p.id}">
           🔍 تفاصيل المنتج
