@@ -162,6 +162,27 @@
     .product-info__note {
       text-align: center; font-size: 0.8rem; color: var(--brown); opacity: 0.8;
     }
+    /* Warning box for clay product */
+    .warn-box {
+      background: #fff3cd;
+      border: 2px solid #e74c3c;
+      border-right: 6px solid #e74c3c;
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      margin: 1.2rem 0;
+      color: #7b2c2c;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+    .warn-box__title {
+      display: block;
+      font-size: 1rem;
+      font-weight: 900;
+      color: #c0392b;
+      margin-bottom: 0.6rem;
+      font-size: 1.05rem;
+    }
+
     /* Weight selector for clay product */
     .weight-selector { margin-bottom: 1.2rem; }
     .weight-selector__label {
@@ -216,7 +237,7 @@
   <!-- Header -->
   <header class="header">
     <div class="container header__inner">
-      <a href="index.html" class="logo">🏺 <span>شرايبة</span></a>
+      <a href="index.html" class="logo">🏺 <span id="logoText">شرايبة</span></a>
       <nav class="nav">
         <a href="index.html#products">المنتجات</a>
         <a href="index.html#highlights">لماذا نحن</a>
@@ -232,7 +253,7 @@
 
   <main class="product-page">
     <div class="container">
-      <a href="index.html" class="back-btn">← العودة للمنتجات</a>
+      <a href="index.html" class="back-btn" id="backBtn">← العودة للمنتجات</a>
 
       <div class="product-layout" id="productLayout">
         <div style="text-align:center;padding:3rem;color:var(--brown);">جاري التحميل...</div>
@@ -243,7 +264,7 @@
   <!-- منتجات مقترحة -->
   <section class="related">
     <div class="container">
-      <h2 class="related__title">منتجات أخرى قد تعجبك</h2>
+      <h2 class="related__title" id="relatedTitle">منتجات أخرى قد تعجبك</h2>
       <div class="products__grid" id="relatedGrid"></div>
     </div>
   </section>
@@ -265,7 +286,7 @@
       const totalEl = document.getElementById("qtyTotal");
       const waBtn = document.getElementById("waBtn");
       if (numEl) numEl.textContent = currentQty;
-      if (totalEl) totalEl.textContent = `الإجمالي: ${currentQty * currentProduct.price} درهم`;
+      if (totalEl) totalEl.textContent = (IS_AR ? "الإجمالي: " : "Total: ") + formatPrice(currentQty * (getProduct(currentProduct.id)?.price || currentProduct.price));
       if (waBtn) {
         const q = currentQty;
         const total = q * currentProduct.price;
@@ -294,12 +315,12 @@
       // Update price display
       const priceEl = document.getElementById("clayPrice");
       const oldEl   = document.getElementById("clayOldPrice");
-      if (priceEl) priceEl.textContent = selectedWeight.price + " درهم";
-      if (oldEl)   oldEl.textContent   = selectedWeight.oldPrice + " درهم";
+      if (priceEl) priceEl.textContent = formatPrice(selectedWeight.price);
+      if (oldEl)   oldEl.textContent   = formatPrice(selectedWeight.oldPrice);
       // Update whatsapp link
       const waBtn = document.getElementById("waBtn");
       if (waBtn) {
-        const msg = `مرحبًا 👋 أريد طلب: الطين الأحمر الطبيعي\nالوزن: ${selectedWeight.label}\nالسعر: ${selectedWeight.price} درهم 🏺`;
+        const msg = IS_AR ? `مرحبًا 👋 أريد طلب: الطين الأحمر الطبيعي\nالوزن: ${selectedWeight.label}\nالسعر: ${selectedWeight.price} درهم 🏺` : `Hello 👋 I'd like to order: Natural Red Clay\nWeight: ${selectedWeight.label}\nPrice: $${selectedWeight.price} 🏺`;
         waBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
       }
     }
@@ -317,14 +338,15 @@
         return;
       }
 
-      document.title = `شرايبة | ${product.name}`;
+      const pr = getProduct(product.id) || product;
+      document.title = (IS_AR ? "شرايبة" : "Shraiba") + " | " + pr.name;
 
       imgs = product.images || [product.img];
       currentIndex = 0;
 
       const initMsg = product.id === 3
-        ? `مرحبًا 👋 أريد طلب: الطين الأحمر الطبيعي\nالوزن: نص كيلو\nالسعر: 65 درهم 🏺`
-        : `مرحبًا 👋 أريد طلب: ${product.name} بسعر ${product.price} درهم 🏺`;
+        ? (IS_AR ? `مرحبًا 👋 أريد طلب: الطين الأحمر الطبيعي\nالوزن: نص كيلو\nالسعر: ${formatPrice(pr.price)} 🏺` : `Hello 👋 I'd like to order: Natural Red Clay\nWeight: 500g\nPrice: ${formatPrice(pr.price)} 🏺`)
+        : (IS_AR ? `مرحبًا 👋 أريد طلب: ${pr.name} بسعر ${formatPrice(pr.price)} 🏺` : `Hello 👋 I'd like to order: ${pr.name} for ${formatPrice(pr.price)} 🏺`);
       const initUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(initMsg)}`;
 
       // Stock display
@@ -385,21 +407,21 @@
         </div>
 
         <div class="product-info">
-          ${product.badge ? `<span class="product-info__badge">${product.badge}</span>` : ""}
-          <h1 class="product-info__name">${product.name}</h1>
+          ${pr.badge ? `<span class="product-info__badge">${pr.badge}</span>` : ""}
+          <h1 class="product-info__name">${pr.name}</h1>
           <div class="product-info__meta">
             <span class="stars">★ ${product.rating}</span>
             <span>| تم بيع +${product.sold} قطعة</span>
           </div>
           ${stockHtml}
           <div class="product-info__pricing">
-            <span class="product-info__price" id="${product.id===3?'clayPrice':''}">${product.price} درهم</span>
-            <span class="product-info__old" id="${product.id===3?'clayOldPrice':''}">${product.oldPrice} درهم</span>
+            <span class="product-info__price" id="${product.id===3?'clayPrice':''}">${formatPrice(pr.price)}</span>
+            <span class="product-info__old" id="${product.id===3?'clayOldPrice':''}">${formatPrice(pr.oldPrice)}</span>
           </div>
           <div class="product-info__shipping">
-            🚚 التوصيل مجاني لجميع مدن المغرب
+            ${IS_AR ? "🚚 التوصيل مجاني لجميع مدن المغرب" : "🚚 Free delivery across Morocco"}
           </div>
-          <p class="product-info__desc">${product.fullDesc || product.desc}</p>
+          <p class="product-info__desc" id="productDesc"></p>
           ${weightHtml}
           ${qtyHtml}
           ${product.hasQuantity ? `
@@ -409,13 +431,27 @@
             <span class="cleaning-tip">✅ الطريقة الصحيحة: اغسل القنينة بالماء والملح — الملح يقتل البكتيريا بشكل طبيعي ويجعل القنينة نظيفة وصالحة للاستخدام كما كانت.</span>
           </div>` : ""}
           <a href="${initUrl}" id="waBtn" class="product-info__wa" target="_blank" rel="noopener">
-            💬 اطلب الآن عبر واتساب
+            ${IS_AR ? "💬 اطلب الآن عبر واتساب" : "💬 Order via WhatsApp"}
           </a>
-          <p class="product-info__note">📦 الدفع عند الاستلام</p>
+          <p class="product-info__note">${IS_AR ? "📦 الدفع عند الاستلام" : "📦 Cash on delivery"}</p>
         </div>
       `;
 
       loadRelated(id);
+
+      // Render fullDesc with styled warning box
+      const descEl = document.getElementById("productDesc");
+      if (descEl) {
+        const rawDesc = pr.fullDesc || pr.desc || "";
+        const rendered = rawDesc
+          .replace(
+            /\[\[WARN_START\]\](.*?)\[\[WARN_TITLE_END\]\](.*?)\[\[WARN_END\]\]/gs,
+            (_, title, body) =>
+              `<div class="warn-box"><span class="warn-box__title">${title.trim()}</span>${body.trim()}</div>`
+          )
+          .replace(/\n/g, "<br>");
+        descEl.innerHTML = rendered;
+      }
       const main = document.getElementById("galleryMain");
       main.addEventListener("touchstart", e => { startX = e.touches[0].clientX; }, { passive: true });
       main.addEventListener("touchend", e => {
@@ -451,28 +487,41 @@
       const related = products.filter(p => !p.hidden && p.id !== currentId);
       const grid = document.getElementById("relatedGrid");
       if (!grid || related.length === 0) return;
-      grid.innerHTML = related.map(p => `
+      grid.innerHTML = related.map(p => { const rpr = getProduct(p.id) || p; return `
         <article class="card visible">
           <a href="product.html?id=${p.id}" style="display:contents">
             <div class="card__media">
-              <img src="${p.img}" alt="${p.name}" loading="lazy" />
-              ${p.badge ? `<span class="card__badge">${p.badge}</span>` : ""}
+              <img src="${p.img}" alt="${rpr.name}" loading="lazy" />
+              ${rpr.badge ? `<span class="card__badge">${rpr.badge}</span>` : ""}
             </div>
           </a>
           <div class="card__body">
-            <h3 class="card__name">${p.name}</h3>
+            <h3 class="card__name">${rpr.name}</h3>
             <div class="card__pricing">
-              <span class="card__price">${p.price} درهم</span>
-              <span class="card__old">${p.oldPrice} درهم</span>
+              <span class="card__price">${formatPrice(rpr.price)}</span>
+              <span class="card__old">${formatPrice(rpr.oldPrice)}</span>`
             </div>
             <a class="card__details" href="product.html?id=${p.id}">🔍 تفاصيل المنتج</a>
-            <a class="card__wa" href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`مرحبًا 👋 أريد طلب: ${p.name} بسعر ${p.price} درهم 🏺`)}" target="_blank" rel="noopener">اطلب عبر واتساب 💬</a>
+            <a class="card__wa" href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(IS_AR ? `مرحبًا 👋 أريد طلب: ${rpr.name} بسعر ${formatPrice(rpr.price)} 🏺` : `Hello 👋 I'd like to order: ${rpr.name} for ${formatPrice(rpr.price)} 🏺`)}" target="_blank" rel="noopener">${IS_AR ? 'اطلب عبر واتساب 💬' : 'Order via WhatsApp 💬'}</a>
           </div>
         </article>
-      `).join("");
+      `; }).join("");
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+      // Apply language UI
+      if (!IS_AR) {
+        document.documentElement.lang = "en";
+        document.documentElement.dir = "ltr";
+        const logo = document.getElementById("logoText");
+        if (logo) logo.textContent = "Shraiba";
+        const back = document.getElementById("backBtn");
+        if (back) back.textContent = "← Back to products";
+        const rt = document.getElementById("relatedTitle");
+        if (rt) rt.textContent = "You might also like";
+        const shippingBar = document.querySelector(".shipping-bar");
+        if (shippingBar) shippingBar.textContent = "🚚 Free delivery across Morocco — included in price";
+      }
       loadProduct();
     });
   </script>
