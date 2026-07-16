@@ -80,7 +80,7 @@ const waLink = (product, qty) => {
 // ====== Render Products (index page) ======
 function renderProducts() {
   const grid = document.getElementById("productGrid");
-  if (!grid) return;
+  grid.innerHTML = products
     .filter(p => !p.hidden)
     .map(
       (p) => `
