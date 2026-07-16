@@ -146,14 +146,14 @@
     }
     .qty-total {
       font-size: 1.2rem; font-weight: 900; color: var(--terracotta);
-      margin-top: 0.5rem; margin-bottom: 1rem;
+      margin-top: 0.5rem; margin-bottom: 0.5rem;
       background: #fff5f0; border: 2px solid var(--terracotta);
       border-radius: 10px; padding: 0.6rem 1rem;
       text-align: center;
     }
     .qty-discount {
-      font-size: 0.82rem; color: #2d6a4f; font-weight: 700;
-      text-align: center; margin-top: -0.5rem; margin-bottom: 0.8rem;
+      font-size: 0.85rem; color: #2d6a4f; font-weight: 700;
+      text-align: center; margin-bottom: 1rem;
     }
 
     .product-info__wa {
@@ -275,8 +275,8 @@
 
       if (numEl) numEl.textContent = currentQty;
 
-      const basePrice = currentProduct.price; // 119 أو 139
-      const pricePerExtra = basePrice - 39; // بدون رسوم توصيل إضافية
+      const basePrice = currentProduct.price;
+      const pricePerExtra = basePrice - 39;
 
       let total, discountMsg;
       if (currentQty === 1) {
@@ -383,7 +383,7 @@
             <button class="qty-btn" onclick="updateQty(1)">+</button>
           </div>
         </div>
-        <p class="qty-total" id="qtyTotal">الإجمالي: ${product.price} درهم</p>
+        <p class="qty-total" id="qtyTotal">💰 الإجمالي: ${product.price} درهم</p>
         <p class="qty-discount" id="qtyDiscount"></p>
       ` : "";
 
