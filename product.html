@@ -145,15 +145,8 @@
       font-weight: 900; color: var(--brown-dark);
     }
     .qty-total {
-      font-size: 1.2rem; font-weight: 900; color: var(--terracotta);
-      margin-top: 0.5rem; margin-bottom: 1rem;
-      background: #fff5f0; border: 2px solid var(--terracotta);
-      border-radius: 10px; padding: 0.6rem 1rem;
-      text-align: center;
-    }
-    .qty-discount {
-      font-size: 0.82rem; color: #2d6a4f; font-weight: 700;
-      text-align: center; margin-top: -0.5rem; margin-bottom: 0.8rem;
+      font-size: 0.85rem; color: var(--brown); margin-top: 0.3rem;
+      margin-bottom: 1rem;
     }
 
     .product-info__wa {
@@ -270,33 +263,18 @@
       currentQty = Math.max(1, currentQty + delta);
       const numEl = document.getElementById("qtyNum");
       const totalEl = document.getElementById("qtyTotal");
-      const discountEl = document.getElementById("qtyDiscount");
       const waBtn = document.getElementById("waBtn");
-
       if (numEl) numEl.textContent = currentQty;
-
-      const basePrice = currentProduct.price; // 119 أو 139
-      const pricePerExtra = basePrice - 39; // بدون رسوم توصيل إضافية
-
-      let total, discountMsg;
-      if (currentQty === 1) {
-        total = basePrice;
-        discountMsg = "";
-      } else {
-        total = basePrice + (pricePerExtra * (currentQty - 1));
-        const saved = (basePrice * currentQty) - total;
-        discountMsg = `🎉 وفرت ${saved} درهم على التوصيل!`;
-      }
-
-      if (totalEl) totalEl.textContent = `💰 الإجمالي: ${total} درهم`;
-      if (discountEl) discountEl.textContent = discountMsg;
-
+      if (totalEl) totalEl.textContent = `الإجمالي: ${currentQty * currentProduct.price} درهم`;
       if (waBtn) {
-        const msg = currentQty > 1
-          ? `مرحبًا 👋 أريد طلب: ${currentProduct.name}\nالكمية: ${currentQty} قطع\nالسعر الإجمالي: ${total} درهم 🏺`
-          : `مرحبًا 👋 أريد طلب: ${currentProduct.name} بسعر ${basePrice} درهم 🏺`;
+        const q = currentQty;
+        const total = q * currentProduct.price;
+        const msg = q > 1
+          ? `مرحبًا 👋 أريد طلب: ${currentProduct.name}\nالكمية: ${q} قطع\nالسعر الإجمالي: ${total} درهم 🏺`
+          : `مرحبًا 👋 أريد طلب: ${currentProduct.name} بسعر ${currentProduct.price} درهم 🏺`;
         waBtn.href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`;
       }
+    }
 
     // Weight options for clay product
     const weightOptions = [
@@ -383,7 +361,6 @@
           </div>
         </div>
         <p class="qty-total" id="qtyTotal">الإجمالي: ${product.price} درهم</p>
-        <p class="qty-discount" id="qtyDiscount"></p>
       ` : "";
 
       document.getElementById("productLayout").innerHTML = `
@@ -420,7 +397,7 @@
             <span class="product-info__old" id="${product.id===3?'clayOldPrice':''}">${product.oldPrice} درهم</span>
           </div>
           <div class="product-info__shipping">
-            🚚 شاملة التوصيل لجميع المدن المغرب
+            🚚 التوصيل مجاني لجميع مدن المغرب
           </div>
           <p class="product-info__desc">${product.fullDesc || product.desc}</p>
           ${weightHtml}
